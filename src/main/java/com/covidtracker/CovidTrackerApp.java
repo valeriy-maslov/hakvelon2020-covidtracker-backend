@@ -1,15 +1,19 @@
 package com.covidtracker;
 
-import com.covidtracker.web.AccountModel;
-import com.covidtracker.web.ChecklistModel;
-import com.covidtracker.web.EmployeeModel;
+import com.covidtracker.web.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import java.util.Date;
+import javax.websocket.server.PathParam;
+import java.sql.Date;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @SpringBootApplication
 
@@ -61,4 +65,21 @@ public class CovidTrackerApp {
     public static void UpdateEmployeeInfo(EmployeeModel employeeModel) {
         System.out.println("info was updated");
     }
+
+    @Autowired
+    private VisitsRepository visitRepository;
+
+    public List<String> getVisitorsByDate(@PathParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+        List<VisitModel> visitors = visitRepository.findAllByDate(Date.valueOf(date));
+        List<String> visitorEmails = new ArrayList<>();
+        if (!visitors.isEmpty()) {
+            for (VisitModel el : visitors) {
+                visitorEmails.add(el.accountModel.email);
+            }
+            return visitorEmails;
+        } else {
+            return null;
+        }
+    }
+
 }

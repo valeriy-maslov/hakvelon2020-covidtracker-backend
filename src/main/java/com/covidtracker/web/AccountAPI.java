@@ -109,7 +109,7 @@ public class AccountAPI {
     }
 
     @DeleteMapping("/{email}/visits")
-    public ResponseEntity<Void> deleteVisit(@PathVariable("email") String email, @PathVariable("date") Date date) {
+    public ResponseEntity<Void> deleteVisit(@PathVariable("email") String email, @PathParam("date") Date date) {
         Optional<AccountModel> one = accountRepository.findById(email);
         if (one.isPresent()) {
             VisitModel visitModel = VisitModel.ValueOf(date, one.get());

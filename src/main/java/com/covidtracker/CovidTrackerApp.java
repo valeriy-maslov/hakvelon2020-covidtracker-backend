@@ -1,4 +1,5 @@
 package com.covidtracker;
+
 import com.covidtracker.web.AccountModel;
 import com.covidtracker.web.ChecklistModel;
 import com.covidtracker.web.EmployeeModel;
@@ -22,41 +23,42 @@ public class CovidTrackerApp {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/**").allowedOrigins("http://localhost:8080", "http://localhost:4200");
+                registry.addMapping("/**").allowedMethods("HEAD", "GET", "PUT", "POST", "DELETE", "PATCH")
+                        .allowedOrigins("http://localhost:8080", "http://localhost:4200");
             }
         };
     }
 
 
-    public static void CreateUser(AccountModel userData){
+    public static void CreateUser(AccountModel userData) {
         System.out.println("user created");
     }
 
-    public static void Login(String email, String password){
+    public static void Login(String email, String password) {
         System.out.println("you logged in");
     }
 
-    public static void UpdateUserData(AccountModel userData){
+    public static void UpdateUserData(AccountModel userData) {
         System.out.println("account info updated");
     }
 
-    public static void SendChecklist(){
+    public static void SendChecklist() {
         System.out.println("checklist was sent");
     }
 
-    public static void SubmitChecklist(ChecklistModel checklist){
+    public static void SubmitChecklist(ChecklistModel checklist) {
         System.out.println("checklist was submitted");
     }
 
-    public static void RestorePassword(String email, String submitCode, String newPassword){
+    public static void RestorePassword(String email, String submitCode, String newPassword) {
         System.out.println("password was reset");
     }
 
-    public static void EnableNotifications(boolean notificationsEnabled){
+    public static void EnableNotifications(boolean notificationsEnabled) {
         System.out.println("notifications were enabled");
     }
 
-    public static void UpdateEmployeeInfo(EmployeeModel employeeModel){
+    public static void UpdateEmployeeInfo(EmployeeModel employeeModel) {
         System.out.println("info was updated");
     }
 }

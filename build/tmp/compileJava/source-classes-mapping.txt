@@ -1,8 +1,0 @@
-com/covidtracker/CovidTrackerApp.java
- com.covidtracker.CovidTrackerApp
-com/covidtracker/web/EmployeeModel.java
- com.covidtracker.web.EmployeeModel
-com/covidtracker/web/AccountModel.java
- com.covidtracker.web.AccountModel
-com/covidtracker/web/AccountAPI.java
- com.covidtracker.web.AccountAPI

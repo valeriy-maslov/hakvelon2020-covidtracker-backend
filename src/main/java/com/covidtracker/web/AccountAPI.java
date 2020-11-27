@@ -1,10 +1,15 @@
 package com.covidtracker.web;
 
 import com.covidtracker.CovidTrackerApp;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
 
 import javax.websocket.server.PathParam;
+import java.util.Optional;
+import java.util.logging.Logger;
 
 /**
  *
@@ -13,21 +18,42 @@ import javax.websocket.server.PathParam;
 @RequestMapping("/accounts")
 public class AccountAPI {
 
+    static class LoginData {
+        public String email;
+        public String password;
+
+        public LoginData(String email, String password) {
+            this.email = email;
+            this.password = password;
+        }
+    }
+
+    @Autowired
+    private AccountRepository repository;
+
+    Logger log = Logger.getLogger(AccountAPI.class.getName());
+
     @GetMapping
     public boolean CheckIfUserExists(@PathParam("email") String email){
-        return false;
+        log.info("Checking that email exists: " + email);
+        return repository.findById(email).isPresent();
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public void createUser (@RequestBody AccountModel accountModel){
-        CovidTrackerApp.CreateUser(accountModel);
+        repository.save(accountModel);
+        log.info("New account saved with email " + accountModel.email);
     }
 
-    @PostMapping("/login")
+    @PostMapping(path = "/login", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
-    public void login (String email, String password){
-        CovidTrackerApp.Login(email, password);
+    public void login (@RequestBody LoginData loginData){
+        Optional<AccountModel> account = repository.findById(loginData.email);
+        account.ifPresent(accountModel -> {
+            Assert.isTrue(accountModel.password.equals(loginData.password), "Invalid password");
+            log.info("User " + loginData.email + " logged in");
+        });
     }
 
     @PutMapping
@@ -36,14 +62,14 @@ public class AccountAPI {
         CovidTrackerApp.UpdateUserData(accountModel);
     }
 
-    @PostMapping("/sendChecklist")
+    @PostMapping("/checklists")
     @ResponseStatus(HttpStatus.OK)
     public void sendChecklist(ChecklistModel checklist){
         CovidTrackerApp.SubmitChecklist(checklist);
         CovidTrackerApp.SendChecklist();
     }
 
-    @PostMapping("/submitChecklist")
+    @PostMapping("/checklists/submit")
     @ResponseStatus(HttpStatus.OK)
     public void submitChecklist(ChecklistModel checklist){
         CovidTrackerApp.SubmitChecklist(checklist);

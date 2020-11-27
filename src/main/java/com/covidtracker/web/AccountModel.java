@@ -1,9 +1,18 @@
 package com.covidtracker.web;
 
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+@Entity
+@Table(name = "accounts")
 public class AccountModel {
-    public String Name;
-    public String Surname;
-    public String Patronymic;
-    public String Company;
-    public String Position;
+
+    @Id
+    public String email;
+    public String password;
+    public String lastName;
+    public String middleName;
+    public String firstName;
+    public String title;
 }

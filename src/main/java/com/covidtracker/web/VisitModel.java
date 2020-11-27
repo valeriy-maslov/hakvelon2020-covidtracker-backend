@@ -1,7 +1,7 @@
 package com.covidtracker.web;
 
 import javax.persistence.*;
-import java.util.Date;
+import java.sql.Date;
 
 @Entity
 @Table(name = "visits")
@@ -16,10 +16,7 @@ public class VisitModel {
     @JoinColumn(name = "email")
     public AccountModel accountModel;
 
-    public static VisitModel ValueOf(Date date, String email){
-        AccountModel accountModel = new AccountModel();
-        accountModel.email = email;
-
+    public static VisitModel ValueOf(Date date, AccountModel accountModel){
         VisitModel visitModel = new VisitModel();
         visitModel.date = date;
         visitModel.accountModel = accountModel;

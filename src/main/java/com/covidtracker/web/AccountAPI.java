@@ -2,13 +2,15 @@ package com.covidtracker.web;
 
 import com.covidtracker.CovidTrackerApp;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
 
 import javax.websocket.server.PathParam;
-import java.util.Date;
+import java.sql.Date;
 import java.util.Optional;
 import java.util.logging.Logger;
 
@@ -85,9 +87,41 @@ public class AccountAPI {
     }
 
     @PostMapping("/{email}/visits")
+    @ResponseStatus(HttpStatus.CREATED)
     public void setVisiting(@PathVariable("email") String email, @RequestBody Date date) {
-        VisitModel visitModel = VisitModel.ValueOf(date, email);
-        visitRepository.save(visitModel);
+        Optional<AccountModel> one = accountRepository.findById(email);
+        one.ifPresent(accountModel -> {
+            VisitModel visitModel = VisitModel.ValueOf(date, accountModel);
+            visitRepository.save(visitModel);
+        });
+    }
+
+    @GetMapping("/{email}/visits")
+    public ResponseEntity<Boolean> getVisitForDate(@PathVariable("email") String email, @PathParam("date") Date date) {
+        Optional<AccountModel> one = accountRepository.findById(email);
+        if (one.isPresent()) {
+            VisitModel visitModel = VisitModel.ValueOf(date, one.get());
+            boolean exists = visitRepository.exists(Example.of(visitModel));
+            return ResponseEntity.ok(exists);
+        } else {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @DeleteMapping("/{email}/visits")
+    public ResponseEntity<Void> deleteVisit(@PathVariable("email") String email, @PathVariable("date") Date date) {
+        Optional<AccountModel> one = accountRepository.findById(email);
+        if (one.isPresent()) {
+            VisitModel visitModel = VisitModel.ValueOf(date, one.get());
+            Optional<VisitModel> visitToDelete = visitRepository.findOne(Example.of(visitModel));
+            if (!visitToDelete.isPresent()) {
+                return ResponseEntity.badRequest().build();
+            }
+            visitRepository.delete(visitToDelete.get());
+            return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     /*

@@ -39,6 +39,9 @@ public class AccountAPI {
     @Autowired
     private VisitsRepository visitRepository;
 
+    @Autowired
+    private ChecklistRepository checklistRepository;
+
     Logger log = Logger.getLogger(AccountAPI.class.getName());
 
     @GetMapping("/check")
@@ -75,17 +78,35 @@ public class AccountAPI {
         CovidTrackerApp.UpdateUserData(accountModel);
     }
 
-    @PostMapping("/checklists")
-    @ResponseStatus(HttpStatus.OK)
-    public void sendChecklist(ChecklistModel checklist) {
-        CovidTrackerApp.SubmitChecklist(checklist);
-        CovidTrackerApp.SendChecklist();
+    @PostMapping(path = "/{email}/checklists", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.CREATED)
+    public void sendChecklist(@PathVariable("email") String email,
+            @PathParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
+            @RequestBody ChecklistModel checklist) {
+        Optional<AccountModel> one = accountRepository.findById(email);
+        one.ifPresent(accountModel -> {
+            checklist.accountModel = accountModel;
+            checklist.date = Date.valueOf(date);
+            checklistRepository.save(checklist);
+        });
     }
 
-    @PostMapping("/checklists/submit")
+    @PostMapping(path = "/{email}/checklists/submit")
     @ResponseStatus(HttpStatus.OK)
-    public void submitChecklist(ChecklistModel checklist) {
-        CovidTrackerApp.SubmitChecklist(checklist);
+    public void submitChecklist(@PathVariable("email") String email,
+            @PathParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+        ChecklistModel checklistModel = checklistRepository
+                .findFirstByAccountModel_EmailAndDate(email, Date.valueOf(date));
+        checklistModel.submitted = true;
+        checklistRepository.save(checklistModel);
+    }
+
+    @GetMapping(path = "/{email}/checklists")
+    public ChecklistModel getChecklist(@PathVariable("email") String email,
+            @PathParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+        ChecklistModel checklistModel = checklistRepository
+                .findFirstByAccountModel_EmailAndDate(email, Date.valueOf(date));
+        return checklistModel;
     }
 
     @PostMapping("/{email}/visits")

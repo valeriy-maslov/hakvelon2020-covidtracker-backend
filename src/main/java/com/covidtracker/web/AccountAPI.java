@@ -10,9 +10,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
 
+import javax.mail.MessagingException;
 import javax.websocket.server.PathParam;
 import java.sql.Date;
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -43,6 +45,9 @@ public class AccountAPI {
 
     @Autowired
     private ChecklistRepository checklistRepository;
+
+    @Autowired
+    private MailService mailService;
 
     Logger log = Logger.getLogger(AccountAPI.class.getName());
 
@@ -152,4 +157,25 @@ public class AccountAPI {
         }
     }
 
+    @GetMapping("/testMail")
+    public void testMail() throws MessagingException {
+        HashMap<String, Object> hashMap = new HashMap<String, Object>() {{
+            put("firstName", "Валерий");
+            put("middleName", "Геннадич");
+            put("lastName", "Маслов");
+            put("title", "Старший инженер-погроммист");
+            put("tempMorning", "36.6");
+            put("tempEvening", "36.6");
+            put("soreThroat", "Нет");
+            put("cough", "Нет");
+            put("snuffle", "Нет");
+            put("isolation", "Да");
+            put("date", "28/11/2020");
+        }};
+        mailService.sendMessageUsingThymeleafTemplate("valeriy.maslov@akvelon.com", "Covid Notification", hashMap);
+    }
+
+    /*
+        set or update days for office visiting
+     */
 }

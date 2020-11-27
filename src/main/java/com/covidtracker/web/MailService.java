@@ -32,6 +32,17 @@ public class MailService {
         sendHtmlMessage(to, subject, htmlBody);
     }
 
+    public void sendAlarmUsingThymeleafTemplate(
+            String to, String subject, Map<String, Object> templateModel)
+            throws MessagingException {
+
+        Context thymeleafContext = new Context();
+        thymeleafContext.setVariables(templateModel);
+        String htmlBody = thymeleafTemplateEngine.process("Alarm.html", thymeleafContext);
+
+        sendHtmlMessage(to, subject, htmlBody);
+    }
+
     public void sendSimpleMessage() {
 
         SimpleMailMessage message = new SimpleMailMessage();

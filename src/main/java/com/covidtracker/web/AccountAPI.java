@@ -175,6 +175,14 @@ public class AccountAPI {
         mailService.sendMessageUsingThymeleafTemplate("valeriy.maslov@akvelon.com", "Covid Notification", hashMap);
     }
 
+    @GetMapping("/alarmMail")
+    public void alarmMail() throws MessagingException {
+        HashMap<String, Object> hashMap = new HashMap<String, Object>() {{
+            put("date", "28/11/2020");
+        }};
+        mailService.sendAlarmUsingThymeleafTemplate("valeriy.maslov@akvelon.com", "Covid Notification", hashMap);
+    }
+
     /*
         set or update days for office visiting
      */

@@ -33,10 +33,15 @@ public class AccountAPI {
 
     Logger log = Logger.getLogger(AccountAPI.class.getName());
 
-    @GetMapping
+    @GetMapping("/check")
     public boolean CheckIfUserExists(@PathParam("email") String email){
         log.info("Checking that email exists: " + email);
         return repository.findById(email).isPresent();
+    }
+
+    @GetMapping("/{email}")
+    public AccountModel getAccount(@PathVariable("email") String email){
+        return repository.findById(email).get();
     }
 
     @PostMapping
